@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>YouTube Clone</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #0f0f0f;
+            background-color: white;
+        }
+
+        /* ---------- HEADER ---------- */
+
+        .header {
+            height: 82px;
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            z-index: 100;
+        }
+
+        .menu {
+            width: 30px;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .menu div {
+            height: 2px;
+            width: 21px;
+            background-color: #333;
+            margin: 5px 0;
+        }
+
+        .youtube-logo {
+            display: flex;
+            align-items: center;
+            font-size: 25px;
+            font-weight: bold;
+            margin-right: auto;
+        }
+
+        .youtube-icon {
+            background-color: red;
+            width: 32px;
+            height: 22px;
+            border-radius: 6px;
+            margin-right: 4px;
+            position: relative;
+        }
+
+        .youtube-icon::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 6px;
+            border-left: 9px solid white;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        /* ---------- SEARCH ---------- */
+
+        .search-container {
+            display: flex;
+            width: 485px;
+            height: 46px;
+            margin-right: 10px;
+        }
+
+        .search-box {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 0 15px;
+            font-size: 18px;
+            outline: none;
+        }
+
+        .search-button {
+            width: 74px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        .mic-button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f8f8f8;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* ---------- RIGHT HEADER ---------- */
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-left: auto;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            bottom: 0;
+            width: 70px;
+            background-color: white;
+            text-align: center;
+            z-index: 50;
+        }
+
+        .side-item {
+            height: 88px;
+            padding-top: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .side-icon {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* ---------- MAIN CONTENT ---------- */
+
+        .main {
+            margin-left: 70px;
+            padding: 110px 27px 30px 27px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            column-gap: 18px;
+            row-gap: 45px;
+        }
+
+        /* ---------- VIDEO ---------- */
+
+        .video {
+            min-width: 0;
+        }
+
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 218px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .duration {
+            position: absolute;
+            right: 5px;
+            bottom: 6px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 4px 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .video-info {
+            display: flex;
+            margin-top: 12px;
+        }
+
+        .channel-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+
+        .video-details {
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 22px;
+            margin: 0 0 8px 0;
+        }
+
+        .channel-name,
+        .video-stats {
+            color: #606060;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+
+        @media (max-width: 1100px) {
+            .video-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .search-container {
+                width: 400px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .video-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-right {
+                display: none;
+            }
+
+            .search-container {
+                width: 350px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .search-container {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="menu">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="youtube-logo">
+            <div class="youtube-icon"></div>
+            YouTube
+        </div>
+
+        <div class="search-container">
+            <input class="search-box" type="text" placeholder="Search">
+            <button class="search-button">⌕</button>
+        </div>
+
+        <button class="mic-button">🎙</button>
+
+        <div class="header-right">
+            <div class="header-icon">▣</div>
+            <div class="header-icon">▦</div>
+            <div class="header-icon">🔔</div>
+
+            <img class="profile"
+                 src="thumbnails/profile.jpg">
+        </div>
+
+    </div>
+
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="side-item">
+            <span class="side-icon">⌂</span>
+            Home
+        </div>
+
+        <div class="side-item">
+            <span class="side-icon">◉</span>
+            Explore
+        </div>
+
+        <div class="side-item">
+            <span class="side-icon">▤</span>
+            Subscriptions
+        </div>
+
+        <div class="side-item">
+            <span class="side-icon">▷</span>
+            Originals
+        </div>
+
+        <div class="side-item">
+            <span class="side-icon">◉</span>
+            YouTube Music
+        </div>
+
+        <div class="side-item">
+            <span class="side-icon">▣</span>
+            Library
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="video-grid">
+
+
+            <!-- VIDEO 1 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-1 (1).webp">
+
+                    <div class="duration">14:20</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-1.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Talking Tech and AI with Google CEO Sundar Pichai!
+                        </p>
+
+                        <p class="channel-name">
+                            Marques Brownlee
+                        </p>
+
+                        <p class="video-stats">
+                            3.4M views · 6 months ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 2 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-2.webp">
+
+                    <div class="duration">8:22</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-2.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Try Not To Laugh Challenge #9
+                        </p>
+
+                        <p class="channel-name">
+                            Markiplier
+                        </p>
+
+                        <p class="video-stats">
+                            19M views · 4 years ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 3 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-3.webp">
+
+                    <div class="duration">9:13</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-3.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Crazy Tik Toks Taken Moments Before DISASTER
+                        </p>
+
+                        <p class="channel-name">
+                            SSSniperWolf
+                        </p>
+
+                        <p class="video-stats">
+                            12M views · 1 year ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 4 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-4.webp">
+
+                    <div class="duration">22:09</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-4.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            The Simplest Math Problem No One Can Solve
+                        </p>
+
+                        <p class="channel-name">
+                            Veritasium
+                        </p>
+
+                        <p class="video-stats">
+                            18M views · 4 months ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 5 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-5.webp">
+
+                    <div class="duration">11:17</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-5.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Kadane's Algorithm to Maximum Sum Subarray Problem
+                        </p>
+
+                        <p class="channel-name">
+                            CS Dojo
+                        </p>
+
+                        <p class="video-stats">
+                            519K views · 5 years ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 6 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-6.webp">
+
+                    <div class="duration">19:59</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-6.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Anything You Can Fit In The Circle I'll Pay For
+                        </p>
+
+                        <p class="channel-name">
+                            MrBeast
+                        </p>
+
+                        <p class="video-stats">
+                            141M views · 1 year ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 7 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-7.webp">
+
+                    <div class="duration">10:13</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-7.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Why Planes Don't Fly Over Tibet
+                        </p>
+
+                        <p class="channel-name">
+                            RealLifeLore
+                        </p>
+
+                        <p class="video-stats">
+                            6.6M views · 1 year ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO 8 -->
+
+            <div class="video">
+
+                <div class="thumbnail-container">
+
+                    <img class="thumbnail"
+                         src="thumbnails/thumbnail-8.webp">
+
+                    <div class="duration">7:12</div>
+
+                </div>
+
+                <div class="video-info">
+
+                    <img class="channel-image"
+                         src="thumbnails/channel-8.jpg">
+
+                    <div class="video-details">
+
+                        <p class="video-title">
+                            Inside The World's Biggest Passenger Plane
+                        </p>
+
+                        <p class="channel-name">
+                            Tech Vision
+                        </p>
+
+                        <p class="video-stats">
+                            3.7M views · 10 months ago
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>
